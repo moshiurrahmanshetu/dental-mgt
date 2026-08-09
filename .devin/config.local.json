@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(mkdir)",
+      "Exec(New-Item)",
+      "Exec(php)",
+      "Exec(Remove-Item)",
+      "Exec(mysql)",
+      "Exec(Get-ChildItem)",
+      "Exec(Test-Path)",
+      "Exec(C:\\xampp\\mysql\\bin\\mysql.exe)"
+    ]
+  }
+}
