@@ -27,7 +27,7 @@ if (!$userData) {
 }
 
 // Get recent activity for this user
-$stmt = $pdo->prepare("SELECT al.*, u.full_name as actor_name 
+$stmt = $pdo->prepare("SELECT al.id, al.user_id, al.action, al.description, al.ip_address, al.created_at, u.full_name as actor_name 
                       FROM activity_logs al 
                       JOIN users u ON al.user_id = u.id 
                       WHERE al.description LIKE ? OR al.description LIKE ?

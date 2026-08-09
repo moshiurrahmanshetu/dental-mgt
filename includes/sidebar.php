@@ -35,7 +35,8 @@ $menuItems = [
         ]],
         ['icon' => 'bi-person-gear', 'label' => 'User Management', 'link' => '#', 'submenu' => [
             ['label' => 'Users', 'link' => '../modules/users/list.php'],
-            ['label' => 'Roles', 'link' => '../modules/users/roles.php']
+            ['label' => 'Roles', 'link' => '../modules/users/roles.php'],
+            ['label' => 'Permissions', 'link' => '../modules/permissions/manage.php']
         ]],
     ],
     'Doctor' => [

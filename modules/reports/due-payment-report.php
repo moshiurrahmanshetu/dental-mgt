@@ -32,8 +32,8 @@ if ($minDueFilter > 0) {
 $whereClause = 'WHERE ' . implode(' AND ', $conditions);
 
 // Get due invoices
-$query = "SELECT i.invoice_code, i.invoice_date, i.total_amount, 
-          COALESCE(SUM(p.amount), 0) as paid_amount, i.due_amount,
+$query = "SELECT i.invoice_number as invoice_code, i.invoice_date, i.total_amount, 
+          COALESCE(SUM(pay.amount), 0) as paid_amount, i.due_amount,
           p.full_name as patient_name
           FROM invoices i
           JOIN patients p ON i.patient_id = p.id

@@ -20,7 +20,7 @@ $conditions = ["1=1"];
 $params = [];
 
 // Date range filter
-$dateCondition = buildDateRangeCondition('registration_date', $dateRange);
+$dateCondition = buildDateRangeCondition('created_at', $dateRange);
 $conditions[] = ltrim($dateCondition['condition'], 'AND ');
 $params = array_merge($params, $dateCondition['params']);
 
@@ -39,10 +39,10 @@ if (!empty($statusFilter)) {
 $whereClause = 'WHERE ' . implode(' AND ', $conditions);
 
 // Get patients
-$query = "SELECT patient_code, full_name, gender, phone, registration_date, status 
+$query = "SELECT patient_code, full_name, gender, phone, created_at, status 
           FROM patients 
           $whereClause 
-          ORDER BY registration_date DESC";
+          ORDER BY created_at DESC";
 
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
@@ -64,7 +64,7 @@ if ($export === 'csv') {
             $patient['full_name'],
             $patient['gender'],
             $patient['phone'],
-            formatDate($patient['registration_date']),
+            formatDate($patient['created_at']),
             $patient['status']
         ];
     }
@@ -188,7 +188,7 @@ if ($export === 'csv') {
                                 <td><?php echo htmlspecialchars($patient['full_name']); ?></td>
                                 <td><?php echo htmlspecialchars($patient['gender']); ?></td>
                                 <td><?php echo htmlspecialchars($patient['phone'] ?? '--'); ?></td>
-                                <td><?php echo formatDate($patient['registration_date']); ?></td>
+                                <td><?php echo formatDate($patient['created_at']); ?></td>
                                 <td>
                                     <span class="badge <?php echo $patient['status'] === 'active' ? 'bg-success' : 'bg-secondary'; ?>">
                                         <?php echo htmlspecialchars($patient['status']); ?>

@@ -20,7 +20,7 @@ $conditions = ["1=1"];
 $params = [];
 
 // Date range filter
-$dateCondition = buildDateRangeCondition('appointment_date', $dateRange);
+$dateCondition = buildDateRangeCondition('a.appointment_date', $dateRange);
 $conditions[] = ltrim($dateCondition['condition'], 'AND ');
 $params = array_merge($params, $dateCondition['params']);
 
@@ -68,7 +68,7 @@ foreach ($appointments as $appointment) {
 }
 
 // Get doctors for filter
-$stmt = $pdo->prepare("SELECT id, full_name FROM users u JOIN roles r ON u.role_id = r.id WHERE r.role_name = 'Doctor' AND u.status = 'active' ORDER BY full_name ASC");
+$stmt = $pdo->prepare("SELECT u.id, u.full_name FROM users u JOIN roles r ON u.role_id = r.id WHERE r.role_name = 'Doctor' AND u.status = 'active' ORDER BY u.full_name ASC");
 $stmt->execute();
 $doctors = $stmt->fetchAll();
 

@@ -131,7 +131,7 @@ try {
 </div>
 
 <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-3 mb-3">
         <div class="stat-card">
             <div class="stat-icon bg-primary">
                 <i class="bi bi-people"></i>
@@ -143,7 +143,7 @@ try {
         </div>
     </div>
     
-    <div class="col-md-2">
+    <div class="col-md-3 mb-3">
         <div class="stat-card">
             <div class="stat-icon bg-success">
                 <i class="bi bi-calendar-check"></i>
@@ -155,7 +155,7 @@ try {
         </div>
     </div>
     
-    <div class="col-md-2">
+    <div class="col-md-3 mb-3">
         <div class="stat-card">
             <div class="stat-icon bg-info">
                 <i class="bi bi-calendar2-event"></i>
@@ -167,7 +167,7 @@ try {
         </div>
     </div>
     
-    <div class="col-md-2">
+    <div class="col-md-3 mb-3">
         <div class="stat-card">
             <div class="stat-icon bg-secondary">
                 <i class="bi bi-check-circle"></i>
@@ -179,7 +179,7 @@ try {
         </div>
     </div>
     
-    <div class="col-md-2">
+    <div class="col-md-3 mb-3">
         <div class="stat-card">
             <div class="stat-icon bg-warning">
                 <i class="bi bi-currency-dollar"></i>
@@ -191,7 +191,7 @@ try {
         </div>
     </div>
     
-    <div class="col-md-2">
+    <div class="col-md-3 mb-3">
         <div class="stat-card">
             <div class="stat-icon bg-danger">
                 <i class="bi bi-cash"></i>

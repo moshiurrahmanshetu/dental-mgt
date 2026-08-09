@@ -39,7 +39,7 @@ if ($receivedByFilter > 0) {
 $whereClause = 'WHERE ' . implode(' AND ', $conditions);
 
 // Get payments
-$query = "SELECT pay.payment_code, i.invoice_code, pat.full_name as patient_name, 
+$query = "SELECT pay.payment_code, i.invoice_number as invoice_code, pat.full_name as patient_name, 
           pay.amount, pay.payment_method, pay.payment_date, u.full_name as received_by_name
           FROM payments pay
           JOIN invoices i ON pay.invoice_id = i.id
@@ -59,9 +59,9 @@ foreach ($payments as $payment) {
 }
 
 // Get staff for filter
-$stmt = $pdo->prepare("SELECT id, full_name FROM users u JOIN roles r ON u.role_id = r.id 
+$stmt = $pdo->prepare("SELECT u.id, u.full_name FROM users u JOIN roles r ON u.role_id = r.id 
                       WHERE r.role_name IN ('Admin', 'Receptionist') AND u.status = 'active' 
-                      ORDER BY full_name ASC");
+                      ORDER BY u.full_name ASC");
 $stmt->execute();
 $staff = $stmt->fetchAll();
 

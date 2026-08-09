@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../config/constants.php';
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../includes/auth_functions.php';
+require_once __DIR__ . '/../permissions/helpers.php';
 
 $error = '';
 $success = '';
@@ -36,6 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['role_id'] = $user['role_id'];
                     $_SESSION['role_name'] = $user['role_name'];
                     $_SESSION['avatar'] = $user['avatar'];
+                    
+                    // Load permissions into session
+                    $_SESSION['permissions'] = getSessionPermissions($pdo, $user['role_id']);
                     
                     // Update last login
                     $updateStmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");

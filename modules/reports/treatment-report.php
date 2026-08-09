@@ -50,7 +50,7 @@ $query = "SELECT tr.record_code, p.full_name as patient_name, u.full_name as doc
           FROM treatment_records tr
           JOIN patients p ON tr.patient_id = p.id
           JOIN users u ON tr.doctor_id = u.id
-          LEFT JOIN treatment_items ti ON tr.id = ti.record_id
+          LEFT JOIN treatment_items ti ON tr.id = ti.treatment_record_id
           $whereClause
           GROUP BY tr.id
           ORDER BY tr.visit_date DESC";
@@ -61,7 +61,7 @@ $treatments = $stmt->fetchAll();
 
 // Get total count
 $countQuery = "SELECT COUNT(DISTINCT tr.id) as total FROM treatment_records tr 
-               LEFT JOIN treatment_items ti ON tr.id = ti.record_id 
+               LEFT JOIN treatment_items ti ON tr.id = ti.treatment_record_id 
                $whereClause";
 $stmt = $pdo->prepare($countQuery);
 $stmt->execute($params);
@@ -71,7 +71,7 @@ $totalTreatments = $totalResult['total'];
 // Get doctors for filter (Admin only)
 $doctors = [];
 if ($user['role_name'] === 'Admin') {
-    $stmt = $pdo->prepare("SELECT id, full_name FROM users u JOIN roles r ON u.role_id = r.id WHERE r.role_name = 'Doctor' AND u.status = 'active' ORDER BY full_name ASC");
+    $stmt = $pdo->prepare("SELECT u.id, u.full_name FROM users u JOIN roles r ON u.role_id = r.id WHERE r.role_name = 'Doctor' AND u.status = 'active' ORDER BY u.full_name ASC");
     $stmt->execute();
     $doctors = $stmt->fetchAll();
 }
