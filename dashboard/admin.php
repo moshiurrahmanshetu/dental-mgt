@@ -40,6 +40,17 @@ try {
     $upcomingAppointments = '--';
     error_log("Upcoming appointments count error: " . $e->getMessage());
 }
+
+// Get total treatment records count
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM treatment_records WHERE status = 'active'");
+    $stmt->execute();
+    $result = $stmt->fetch();
+    $totalTreatmentRecords = $result['total'];
+} catch (PDOException $e) {
+    $totalTreatmentRecords = '--';
+    error_log("Total treatment records count error: " . $e->getMessage());
+}
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
@@ -88,11 +99,11 @@ try {
     <div class="col-md-3">
         <div class="stat-card">
             <div class="stat-icon bg-info">
-                <i class="bi bi-people-fill"></i>
+                <i class="bi bi-journal-medical"></i>
             </div>
             <div class="stat-content">
-                <h3>--</h3>
-                <p>Active Doctors</p>
+                <h3><?php echo $totalTreatmentRecords; ?></h3>
+                <p>Total Treatment Records</p>
             </div>
         </div>
     </div>

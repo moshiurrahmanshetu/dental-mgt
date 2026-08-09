@@ -162,15 +162,49 @@ $success = $_GET['success'] ?? '';
             </div>
         </div>
         
-        <!-- Treatment Record Placeholder (Phase 4) -->
+        <!-- Treatment Record Section -->
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">Treatment Record</h5>
             </div>
-            <div class="card-body text-center py-5">
-                <i class="bi bi-file-medical fs-1 text-muted"></i>
-                <p class="text-muted mt-3">Treatment records will be available in Phase 4</p>
-                <small class="text-muted">Doctors will be able to add diagnosis, treatments, and medical records here.</small>
+            <div class="card-body">
+                <?php
+                // Check if a treatment record already exists for this appointment
+                $stmt = $pdo->prepare("SELECT id, record_code FROM treatment_records WHERE appointment_id = ?");
+                $stmt->execute([$appointmentId]);
+                $existingTreatment = $stmt->fetch();
+                
+                if ($existingTreatment): ?>
+                    <div class="alert alert-success mb-3">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Treatment record already created.
+                        <a href="<?php echo BASE_URL; ?>modules/treatments/view.php?id=<?php echo $existingTreatment['id']; ?>" 
+                           class="alert-link">View Record</a>
+                    </div>
+                <?php elseif ($appointment['status'] === 'Completed' && $appointment['doctor_id'] == $_SESSION['user_id']): ?>
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-3">Add treatment record for this completed appointment</p>
+                        <a href="<?php echo BASE_URL; ?>modules/treatments/add.php?appointment_id=<?php echo $appointmentId; ?>" 
+                           class="btn btn-primary btn-lg">
+                            <i class="bi bi-file-medical me-2"></i>Add Treatment Record
+                        </a>
+                    </div>
+                <?php elseif ($appointment['status'] !== 'Completed'): ?>
+                    <div class="text-center py-4">
+                        <i class="bi bi-info-circle fs-1 text-muted"></i>
+                        <p class="text-muted mt-3">Treatment records can only be added for completed appointments.</p>
+                    </div>
+                <?php elseif ($appointment['doctor_id'] != $_SESSION['user_id']): ?>
+                    <div class="text-center py-4">
+                        <i class="bi bi-lock fs-1 text-muted"></i>
+                        <p class="text-muted mt-3">Only the assigned doctor can add treatment records.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="text-center py-4">
+                        <i class="bi bi-file-medical fs-1 text-muted"></i>
+                        <p class="text-muted mt-3">No treatment record available for this appointment.</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

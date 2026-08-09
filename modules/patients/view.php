@@ -1,6 +1,7 @@
 <?php
 $pageTitle = 'Patient Profile';
 require_once __DIR__ . '/../../includes/auth_check.php';
+require_once __DIR__ . '/../../includes/auth_functions.php';
 require_once __DIR__ . '/helpers.php';
 
 // Role-based access control
@@ -201,10 +202,73 @@ $age = $patient['age'] ?? calculateAge($patient['date_of_birth']);
     <!-- Treatment History Tab -->
     <div class="tab-pane fade" id="treatment" role="tabpanel">
         <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="bi bi-journal-x fs-1 text-muted"></i>
-                <h4 class="mt-3">Treatment History</h4>
-                <p class="text-muted">Coming in Phase 4</p>
+            <div class="card-body">
+                <?php
+                // Get patient's treatment history
+                $stmt = $pdo->prepare("SELECT tr.*, d.full_name as doctor_name 
+                                      FROM treatment_records tr 
+                                      JOIN users d ON tr.doctor_id = d.id 
+                                      WHERE tr.patient_id = ? AND tr.status = 'active'
+                                      ORDER BY tr.visit_date DESC, tr.created_at DESC");
+                $stmt->execute([$patientId]);
+                $treatmentHistory = $stmt->fetchAll();
+                ?>
+                
+                <?php if (empty($treatmentHistory)): ?>
+                    <div class="text-center py-5">
+                        <i class="bi bi-journal-x fs-1 text-muted"></i>
+                        <h4 class="mt-3">No Treatment History</h4>
+                        <p class="text-muted">This patient has no treatment records yet.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Record Code</th>
+                                    <th>Visit Date</th>
+                                    <th>Doctor</th>
+                                    <th>Diagnosis</th>
+                                    <th>Follow-up</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($treatmentHistory as $record): ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars($record['record_code']); ?></strong></td>
+                                        <td><?php echo htmlspecialchars($record['visit_date']); ?></td>
+                                        <td><?php echo htmlspecialchars($record['doctor_name']); ?></td>
+                                        <td><?php echo htmlspecialchars(substr($record['diagnosis'] ?? '', 0, 50)) . (strlen($record['diagnosis'] ?? '') > 50 ? '...' : ''); ?></td>
+                                        <td>
+                                            <?php if ($record['follow_up_date']): ?>
+                                                <?php 
+                                                $followUpDate = new DateTime($record['follow_up_date']);
+                                                $today = new DateTime();
+                                                $isOverdue = $followUpDate < $today;
+                                                ?>
+                                                <span class="<?php echo $isOverdue ? 'text-danger' : ''; ?>">
+                                                    <?php echo htmlspecialchars($record['follow_up_date']); ?>
+                                                    <?php if ($isOverdue): ?>
+                                                        <span class="badge bg-danger">Overdue</span>
+                                                    <?php endif; ?>
+                                                </span>
+                                            <?php else: ?>
+                                                --
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <a href="<?php echo BASE_URL; ?>modules/treatments/view.php?id=<?php echo $record['id']; ?>" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

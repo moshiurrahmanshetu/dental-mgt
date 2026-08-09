@@ -42,6 +42,18 @@ try {
     error_log("Doctor's patients count error: " . $e->getMessage());
 }
 
+// Get doctor's treatment records this month
+try {
+    $monthStart = date('Y-m-01');
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM treatment_records WHERE doctor_id = ? AND visit_date >= ?");
+    $stmt->execute([$_SESSION['user_id'], $monthStart]);
+    $result = $stmt->fetch();
+    $treatmentRecordsThisMonth = $result['total'];
+} catch (PDOException $e) {
+    $treatmentRecordsThisMonth = '--';
+    error_log("Doctor's treatment records count error: " . $e->getMessage());
+}
+
 // Get doctor's today's appointments for mini table
 try {
     $stmt = $pdo->prepare("SELECT a.*, p.full_name as patient_name, p.patient_code 
@@ -106,8 +118,8 @@ try {
                 <i class="bi bi-journal-medical"></i>
             </div>
             <div class="stat-content">
-                <h3>--</h3>
-                <p>Medical Records</p>
+                <h3><?php echo $treatmentRecordsThisMonth; ?></h3>
+                <p>Treatment Records This Month</p>
             </div>
         </div>
     </div>

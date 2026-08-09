@@ -17,6 +17,9 @@ $menuItems = [
             ['label' => 'Upcoming Appointments', 'link' => '../modules/appointments/upcoming.php'],
             ['label' => 'Book Appointment', 'link' => '../modules/appointments/add.php']
         ]],
+        ['icon' => 'bi-journal-medical', 'label' => 'Treatment Records', 'link' => '#', 'submenu' => [
+            ['label' => 'All Records', 'link' => '../modules/treatments/list.php']
+        ]],
         ['icon' => 'bi-currency-dollar', 'label' => 'Billing', 'link' => '#'],
         ['icon' => 'bi-people-fill', 'label' => 'Doctors', 'link' => '#'],
         ['icon' => 'bi-person-badge', 'label' => 'Receptionists', 'link' => '#'],
@@ -30,7 +33,9 @@ $menuItems = [
             ['label' => "Today's Appointments", 'link' => '../modules/appointments/today.php'],
             ['label' => 'Upcoming Appointments', 'link' => '../modules/appointments/upcoming.php']
         ]],
-        ['icon' => 'bi-journal-medical', 'label' => 'Medical Records', 'link' => '#'],
+        ['icon' => 'bi-journal-medical', 'label' => 'Treatment Records', 'link' => '#', 'submenu' => [
+            ['label' => 'My Records', 'link' => '../modules/treatments/list.php']
+        ]],
     ],
     'Receptionist' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'link' => 'receptionist.php'],
@@ -43,6 +48,9 @@ $menuItems = [
             ['label' => "Today's Appointments", 'link' => '../modules/appointments/today.php'],
             ['label' => 'Upcoming Appointments', 'link' => '../modules/appointments/upcoming.php'],
             ['label' => 'Book Appointment', 'link' => '../modules/appointments/add.php']
+        ]],
+        ['icon' => 'bi-journal-medical', 'label' => 'Treatment Records', 'link' => '#', 'submenu' => [
+            ['label' => 'View Records', 'link' => '../modules/treatments/list.php']
         ]],
         ['icon' => 'bi-currency-dollar', 'label' => 'Billing', 'link' => '#'],
     ],
