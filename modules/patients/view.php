@@ -3,6 +3,7 @@ $pageTitle = 'Patient Profile';
 require_once __DIR__ . '/../../includes/auth_check.php';
 require_once __DIR__ . '/../../includes/auth_functions.php';
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/../billing/helpers.php';
 
 // Role-based access control
 requireAuth();
@@ -276,10 +277,65 @@ $age = $patient['age'] ?? calculateAge($patient['date_of_birth']);
     <!-- Payment History Tab -->
     <div class="tab-pane fade" id="payment" role="tabpanel">
         <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="bi bi-currency-x fs-1 text-muted"></i>
-                <h4 class="mt-3">Payment History</h4>
-                <p class="text-muted">Coming in Phase 5</p>
+            <div class="card-body">
+                <?php
+                // Get patient's invoice history
+                $stmt = $pdo->prepare("SELECT i.*, tr.record_code as treatment_record_code 
+                                      FROM invoices i 
+                                      LEFT JOIN treatment_records tr ON i.treatment_record_id = tr.id 
+                                      WHERE i.patient_id = ? AND i.status = 'active'
+                                      ORDER BY i.invoice_date DESC, i.created_at DESC");
+                $stmt->execute([$patientId]);
+                $invoiceHistory = $stmt->fetchAll();
+                ?>
+                
+                <?php if (empty($invoiceHistory)): ?>
+                    <div class="text-center py-5">
+                        <i class="bi bi-currency-x fs-1 text-muted"></i>
+                        <h4 class="mt-3">No Payment History</h4>
+                        <p class="text-muted">This patient has no invoices yet.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Invoice Number</th>
+                                    <th>Invoice Date</th>
+                                    <th>Total Amount</th>
+                                    <th>Paid Amount</th>
+                                    <th>Due Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($invoiceHistory as $invoice): ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars($invoice['invoice_number']); ?></strong></td>
+                                        <td><?php echo htmlspecialchars($invoice['invoice_date']); ?></td>
+                                        <td>$<?php echo number_format($invoice['total_amount'], 2); ?></td>
+                                        <td>$<?php echo number_format($invoice['paid_amount'], 2); ?></td>
+                                        <td class="<?php echo $invoice['due_amount'] > 0 ? 'text-danger fw-bold' : 'text-success'; ?>">
+                                            $<?php echo number_format($invoice['due_amount'], 2); ?>
+                                        </td>
+                                        <td>
+                                            <span class="badge <?php echo getPaymentStatusBadgeClass($invoice['payment_status']); ?>">
+                                                <?php echo htmlspecialchars($invoice['payment_status']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="<?php echo BASE_URL; ?>modules/billing/view-invoice.php?id=<?php echo $invoice['id']; ?>" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

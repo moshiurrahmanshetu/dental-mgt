@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/constants.php';
+require_once __DIR__ . '/../modules/users/helpers.php';
 
 // Get current user info (session already started in auth_check.php)
 $currentRole = $_SESSION['role_name'] ?? '';
@@ -51,19 +52,20 @@ $currentUser = [
                        data-bs-toggle="dropdown">
                         <div class="user-avatar me-2">
                             <?php if ($currentUser['avatar']): ?>
-                                <img src="<?php echo htmlspecialchars($currentUser['avatar']); ?>" 
-                                     alt="Avatar" class="rounded-circle">
+                                <img src="<?php echo BASE_URL; ?>assets/images/users/<?php echo htmlspecialchars($currentUser['avatar']); ?>" 
+                                     alt="Avatar" class="rounded-circle" width="32" height="32">
                             <?php else: ?>
-                                <div class="avatar-placeholder rounded-circle">
-                                    <i class="bi bi-person"></i>
+                                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 32px; height: 32px; background-color: rgba(255,255,255,0.3); color: white; font-size: 14px;">
+                                    <?php echo strtoupper(substr($currentUser['full_name'], 0, 1)); ?>
                                 </div>
                             <?php endif; ?>
                         </div>
                         <span><?php echo htmlspecialchars($currentUser['full_name']); ?></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>My Profile</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-key me-2"></i>Change Password</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>modules/profile/my-profile.php"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>modules/profile/change-password.php"><i class="bi bi-key me-2"></i>Change Password</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>modules/auth/logout.php">
                             <i class="bi bi-box-arrow-right me-2"></i>Logout

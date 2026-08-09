@@ -20,7 +20,11 @@ $menuItems = [
         ['icon' => 'bi-journal-medical', 'label' => 'Treatment Records', 'link' => '#', 'submenu' => [
             ['label' => 'All Records', 'link' => '../modules/treatments/list.php']
         ]],
-        ['icon' => 'bi-currency-dollar', 'label' => 'Billing', 'link' => '#'],
+        ['icon' => 'bi-currency-dollar', 'label' => 'Billing & Payments', 'link' => '#', 'submenu' => [
+            ['label' => 'Invoices', 'link' => '../modules/billing/list-invoices.php'],
+            ['label' => 'Payments', 'link' => '../modules/billing/payment-history.php'],
+            ['label' => 'Due Payments', 'link' => '../modules/billing/due-payments.php']
+        ]],
         ['icon' => 'bi-people-fill', 'label' => 'Doctors', 'link' => '#'],
         ['icon' => 'bi-person-badge', 'label' => 'Receptionists', 'link' => '#'],
         ['icon' => 'bi-gear', 'label' => 'Settings', 'link' => '#'],
@@ -35,6 +39,10 @@ $menuItems = [
         ]],
         ['icon' => 'bi-journal-medical', 'label' => 'Treatment Records', 'link' => '#', 'submenu' => [
             ['label' => 'My Records', 'link' => '../modules/treatments/list.php']
+        ]],
+        ['icon' => 'bi-currency-dollar', 'label' => 'Billing', 'link' => '#', 'submenu' => [
+            ['label' => 'View Invoices', 'link' => '../modules/billing/list-invoices.php'],
+            ['label' => 'Payment History', 'link' => '../modules/billing/payment-history.php']
         ]],
     ],
     'Receptionist' => [
@@ -52,7 +60,11 @@ $menuItems = [
         ['icon' => 'bi-journal-medical', 'label' => 'Treatment Records', 'link' => '#', 'submenu' => [
             ['label' => 'View Records', 'link' => '../modules/treatments/list.php']
         ]],
-        ['icon' => 'bi-currency-dollar', 'label' => 'Billing', 'link' => '#'],
+        ['icon' => 'bi-currency-dollar', 'label' => 'Billing & Payments', 'link' => '#', 'submenu' => [
+            ['label' => 'Invoices', 'link' => '../modules/billing/list-invoices.php'],
+            ['label' => 'Payments', 'link' => '../modules/billing/payment-history.php'],
+            ['label' => 'Due Payments', 'link' => '../modules/billing/due-payments.php']
+        ]],
     ],
     'Patient' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'link' => 'patient.php'],

@@ -2,6 +2,7 @@
 $pageTitle = 'Admin Dashboard';
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/auth_functions.php';
+require_once __DIR__ . '/../modules/billing/helpers.php';
 requireAuth();
 checkRole(['Admin']);
 
@@ -51,6 +52,28 @@ try {
     $totalTreatmentRecords = '--';
     error_log("Total treatment records count error: " . $e->getMessage());
 }
+
+// Get today's revenue
+try {
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_date = ?");
+    $stmt->execute([$today]);
+    $result = $stmt->fetch();
+    $todayRevenue = $result['total'];
+} catch (PDOException $e) {
+    $todayRevenue = '--';
+    error_log("Today's revenue error: " . $e->getMessage());
+}
+
+// Get total due amount
+try {
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(due_amount), 0) as total FROM invoices WHERE due_amount > 0 AND status = 'active'");
+    $stmt->execute();
+    $result = $stmt->fetch();
+    $totalDueAmount = $result['total'];
+} catch (PDOException $e) {
+    $totalDueAmount = '--';
+    error_log("Total due amount error: " . $e->getMessage());
+}
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
@@ -90,7 +113,7 @@ try {
                 <i class="bi bi-currency-dollar"></i>
             </div>
             <div class="stat-content">
-                <h3>--</h3>
+                <h3>$<?php echo number_format($todayRevenue, 2); ?></h3>
                 <p>Today's Revenue</p>
             </div>
         </div>
@@ -98,12 +121,12 @@ try {
     
     <div class="col-md-3">
         <div class="stat-card">
-            <div class="stat-icon bg-info">
-                <i class="bi bi-journal-medical"></i>
+            <div class="stat-icon bg-danger">
+                <i class="bi bi-cash"></i>
             </div>
             <div class="stat-content">
-                <h3><?php echo $totalTreatmentRecords; ?></h3>
-                <p>Total Treatment Records</p>
+                <h3>$<?php echo number_format($totalDueAmount, 2); ?></h3>
+                <p>Total Due Amount</p>
             </div>
         </div>
     </div>

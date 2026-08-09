@@ -3,6 +3,7 @@ $pageTitle = 'View Treatment Record';
 require_once __DIR__ . '/../../includes/auth_check.php';
 require_once __DIR__ . '/../../includes/auth_functions.php';
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/../../modules/billing/helpers.php';
 
 // Role-based access control
 $currentRole = $_SESSION['role_name'];
@@ -53,6 +54,11 @@ $treatmentItems = $stmt->fetchAll();
 $stmt = $pdo->prepare("SELECT * FROM prescriptions WHERE treatment_record_id = ? ORDER BY id ASC");
 $stmt->execute([$recordId]);
 $prescriptions = $stmt->fetchAll();
+
+// Check if invoice exists for this treatment record
+$stmt = $pdo->prepare("SELECT id, invoice_number, payment_status, total_amount, due_amount FROM invoices WHERE treatment_record_id = ?");
+$stmt->execute([$recordId]);
+$existingInvoice = $stmt->fetch();
 
 // Check if user can edit (original doctor or Admin)
 $canEdit = ($currentRole === 'Admin') || ($currentRole === 'Doctor' && $record['doctor_id'] == $_SESSION['user_id']);
@@ -347,6 +353,23 @@ $success = $_GET['success'] ?? '';
                            class="btn btn-primary">
                             <i class="bi bi-pencil me-2"></i>Edit Record
                         </a>
+                    <?php endif; ?>
+                    
+                    <?php if (in_array($currentRole, ['Admin', 'Receptionist'])): ?>
+                        <?php if ($existingInvoice): ?>
+                            <a href="<?php echo BASE_URL; ?>modules/billing/view-invoice.php?id=<?php echo $existingInvoice['id']; ?>" 
+                               class="btn btn-success">
+                                <i class="bi bi-file-earmark-text me-2"></i>View Invoice
+                                <span class="badge <?php echo getPaymentStatusBadgeClass($existingInvoice['payment_status']); ?> ms-2">
+                                    <?php echo htmlspecialchars($existingInvoice['payment_status']); ?>
+                                </span>
+                            </a>
+                        <?php else: ?>
+                            <a href="<?php echo BASE_URL; ?>modules/billing/add-invoice.php?treatment_record_id=<?php echo $recordId; ?>" 
+                               class="btn btn-success">
+                                <i class="bi bi-file-earmark-plus me-2"></i>Create Invoice
+                            </a>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
