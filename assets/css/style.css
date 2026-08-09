@@ -172,6 +172,7 @@ body {
 
 .sidebar-item {
     margin: 0;
+    list-style: none;
 }
 
 .sidebar-link {
