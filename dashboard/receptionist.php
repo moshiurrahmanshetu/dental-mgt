@@ -63,6 +63,32 @@ try {
     $totalDueAmount = '--';
     error_log("Total due amount error: " . $e->getMessage());
 }
+
+// Get upcoming appointments (first 5)
+try {
+    $stmt = $pdo->prepare("SELECT a.appointment_code, a.appointment_date, a.appointment_time, p.full_name as patient_name, u.full_name as doctor_name 
+                          FROM appointments a 
+                          JOIN patients p ON a.patient_id = p.id 
+                          JOIN users u ON a.doctor_id = u.id 
+                          WHERE a.appointment_date >= ? AND a.status IN ('Pending', 'Confirmed') 
+                          ORDER BY a.appointment_date ASC, a.appointment_time ASC 
+                          LIMIT 5");
+    $stmt->execute([$today]);
+    $upcomingAppointmentsList = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $upcomingAppointmentsList = [];
+    error_log("Upcoming appointments list error: " . $e->getMessage());
+}
+
+// Get recent patient registrations
+try {
+    $stmt = $pdo->prepare("SELECT patient_code, full_name, phone, registration_date FROM patients ORDER BY registration_date DESC LIMIT 5");
+    $stmt->execute();
+    $recentRegistrations = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $recentRegistrations = [];
+    error_log("Recent registrations error: " . $e->getMessage());
+}
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
@@ -128,8 +154,32 @@ try {
                 <h5 class="card-title mb-0">Upcoming Appointments</h5>
             </div>
             <div class="card-body">
-                <h4 class="mb-1"><?php echo $upcomingAppointments; ?></h4>
-                <p class="text-muted">Future appointments (Pending & Confirmed)</p>
+                <?php if (empty($upcomingAppointmentsList)): ?>
+                    <p class="text-muted">No upcoming appointments.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($upcomingAppointmentsList as $appointment): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
+                                        <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
+                                        <td><?php echo htmlspecialchars($appointment['patient_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($appointment['doctor_name']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -140,7 +190,32 @@ try {
                 <h5 class="card-title mb-0">Recent Registrations</h5>
             </div>
             <div class="card-body">
-                <p class="text-muted">Recently registered patients will be displayed here in future phases.</p>
+                <?php if (empty($recentRegistrations)): ?>
+                    <p class="text-muted">No recent registrations.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Patient Code</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($recentRegistrations as $patient): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($patient['patient_code']); ?></td>
+                                        <td><?php echo htmlspecialchars($patient['full_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($patient['phone'] ?? '--'); ?></td>
+                                        <td><?php echo htmlspecialchars($patient['registration_date']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

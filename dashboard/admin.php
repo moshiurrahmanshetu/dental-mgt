@@ -74,6 +74,54 @@ try {
     $totalDueAmount = '--';
     error_log("Total due amount error: " . $e->getMessage());
 }
+
+// Get total doctors count
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM users u JOIN roles r ON u.role_id = r.id WHERE r.role_name = 'Doctor' AND u.status = 'active'");
+    $stmt->execute();
+    $result = $stmt->fetch();
+    $totalDoctors = $result['total'];
+} catch (PDOException $e) {
+    $totalDoctors = '--';
+    error_log("Total doctors count error: " . $e->getMessage());
+}
+
+// Get completed appointments count
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM appointments WHERE status = 'Completed'");
+    $stmt->execute();
+    $result = $stmt->fetch();
+    $completedAppointments = $result['total'];
+} catch (PDOException $e) {
+    $completedAppointments = '--';
+    error_log("Completed appointments count error: " . $e->getMessage());
+}
+
+// Get recent activity
+try {
+    $stmt = $pdo->prepare("SELECT al.*, u.full_name as actor_name FROM activity_logs al JOIN users u ON al.user_id = u.id ORDER BY al.created_at DESC LIMIT 10");
+    $stmt->execute();
+    $recentActivity = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $recentActivity = [];
+    error_log("Recent activity error: " . $e->getMessage());
+}
+
+// Get upcoming appointments (first 5)
+try {
+    $stmt = $pdo->prepare("SELECT a.appointment_code, a.appointment_date, a.appointment_time, p.full_name as patient_name, u.full_name as doctor_name 
+                          FROM appointments a 
+                          JOIN patients p ON a.patient_id = p.id 
+                          JOIN users u ON a.doctor_id = u.id 
+                          WHERE a.appointment_date >= ? AND a.status IN ('Pending', 'Confirmed') 
+                          ORDER BY a.appointment_date ASC, a.appointment_time ASC 
+                          LIMIT 5");
+    $stmt->execute([$today]);
+    $upcomingAppointmentsList = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $upcomingAppointmentsList = [];
+    error_log("Upcoming appointments list error: " . $e->getMessage());
+}
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
@@ -83,7 +131,7 @@ try {
 </div>
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-2">
         <div class="stat-card">
             <div class="stat-icon bg-primary">
                 <i class="bi bi-people"></i>
@@ -95,7 +143,7 @@ try {
         </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-md-2">
         <div class="stat-card">
             <div class="stat-icon bg-success">
                 <i class="bi bi-calendar-check"></i>
@@ -107,7 +155,31 @@ try {
         </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-md-2">
+        <div class="stat-card">
+            <div class="stat-icon bg-info">
+                <i class="bi bi-calendar2-event"></i>
+            </div>
+            <div class="stat-content">
+                <h3><?php echo $upcomingAppointments; ?></h3>
+                <p>Upcoming</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="stat-card">
+            <div class="stat-icon bg-secondary">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3><?php echo $completedAppointments; ?></h3>
+                <p>Completed</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
         <div class="stat-card">
             <div class="stat-icon bg-warning">
                 <i class="bi bi-currency-dollar"></i>
@@ -119,14 +191,14 @@ try {
         </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-md-2">
         <div class="stat-card">
             <div class="stat-icon bg-danger">
                 <i class="bi bi-cash"></i>
             </div>
             <div class="stat-content">
                 <h3>$<?php echo number_format($totalDueAmount, 2); ?></h3>
-                <p>Total Due Amount</p>
+                <p>Total Due</p>
             </div>
         </div>
     </div>
@@ -139,7 +211,30 @@ try {
                 <h5 class="card-title mb-0">Recent Activity</h5>
             </div>
             <div class="card-body">
-                <p class="text-muted">Activity logs will be displayed here in future phases.</p>
+                <?php if (empty($recentActivity)): ?>
+                    <p class="text-muted">No recent activity.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                    <th>User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($recentActivity as $activity): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($activity['created_at']); ?></td>
+                                        <td><?php echo htmlspecialchars($activity['description']); ?></td>
+                                        <td><?php echo htmlspecialchars($activity['actor_name']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -150,8 +245,32 @@ try {
                 <h5 class="card-title mb-0">Upcoming Appointments</h5>
             </div>
             <div class="card-body">
-                <h4 class="mb-1"><?php echo $upcomingAppointments; ?></h4>
-                <p class="text-muted">Future appointments (Pending & Confirmed)</p>
+                <?php if (empty($upcomingAppointmentsList)): ?>
+                    <p class="text-muted">No upcoming appointments.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($upcomingAppointmentsList as $appointment): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
+                                        <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
+                                        <td><?php echo htmlspecialchars($appointment['patient_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($appointment['doctor_name']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

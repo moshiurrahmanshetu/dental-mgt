@@ -5,6 +5,9 @@ requireAuth();
 checkRole(['Patient']);
 
 $user = getCurrentUser();
+
+// Note: Patient self-service portal linking is out of scope for this version per original requirements.
+// The patient role exists but is not connected to real patient data in the database.
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 

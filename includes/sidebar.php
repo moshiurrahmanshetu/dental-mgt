@@ -25,9 +25,18 @@ $menuItems = [
             ['label' => 'Payments', 'link' => '../modules/billing/payment-history.php'],
             ['label' => 'Due Payments', 'link' => '../modules/billing/due-payments.php']
         ]],
-        ['icon' => 'bi-people-fill', 'label' => 'Doctors', 'link' => '#'],
-        ['icon' => 'bi-person-badge', 'label' => 'Receptionists', 'link' => '#'],
-        ['icon' => 'bi-gear', 'label' => 'Settings', 'link' => '#'],
+        ['icon' => 'bi-bar-chart', 'label' => 'Reports', 'link' => '#', 'submenu' => [
+            ['label' => 'Patient Report', 'link' => '../modules/reports/patient-report.php'],
+            ['label' => 'Appointment Report', 'link' => '../modules/reports/appointment-report.php'],
+            ['label' => 'Treatment Report', 'link' => '../modules/reports/treatment-report.php'],
+            ['label' => 'Revenue Report', 'link' => '../modules/reports/revenue-report.php'],
+            ['label' => 'Payment Report', 'link' => '../modules/reports/payment-report.php'],
+            ['label' => 'Due Payment Report', 'link' => '../modules/reports/due-payment-report.php']
+        ]],
+        ['icon' => 'bi-person-gear', 'label' => 'User Management', 'link' => '#', 'submenu' => [
+            ['label' => 'Users', 'link' => '../modules/users/list.php'],
+            ['label' => 'Roles', 'link' => '../modules/users/roles.php']
+        ]],
     ],
     'Doctor' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'link' => 'doctor.php'],
@@ -43,6 +52,10 @@ $menuItems = [
         ['icon' => 'bi-currency-dollar', 'label' => 'Billing', 'link' => '#', 'submenu' => [
             ['label' => 'View Invoices', 'link' => '../modules/billing/list-invoices.php'],
             ['label' => 'Payment History', 'link' => '../modules/billing/payment-history.php']
+        ]],
+        ['icon' => 'bi-bar-chart', 'label' => 'Reports', 'link' => '#', 'submenu' => [
+            ['label' => 'Patient Report', 'link' => '../modules/reports/patient-report.php'],
+            ['label' => 'Treatment Report', 'link' => '../modules/reports/treatment-report.php']
         ]],
     ],
     'Receptionist' => [
@@ -65,6 +78,10 @@ $menuItems = [
             ['label' => 'Payments', 'link' => '../modules/billing/payment-history.php'],
             ['label' => 'Due Payments', 'link' => '../modules/billing/due-payments.php']
         ]],
+        ['icon' => 'bi-bar-chart', 'label' => 'Reports', 'link' => '#', 'submenu' => [
+            ['label' => 'Appointment Report', 'link' => '../modules/reports/appointment-report.php'],
+            ['label' => 'Payment Report', 'link' => '../modules/reports/payment-report.php']
+        ]],
     ],
     'Patient' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'link' => 'patient.php'],
@@ -72,12 +89,6 @@ $menuItems = [
         ['icon' => 'bi-journal-medical', 'label' => 'Medical History', 'link' => '#'],
         ['icon' => 'bi-currency-dollar', 'label' => 'My Bills', 'link' => '#'],
     ]
-];
-
-// Common menu items for all roles
-$commonItems = [
-    ['icon' => 'bi-person', 'label' => 'My Profile', 'link' => '#'],
-    ['icon' => 'bi-key', 'label' => 'Change Password', 'link' => '#'],
 ];
 ?>
 
@@ -155,22 +166,4 @@ $commonItems = [
             </li>
         <?php endforeach; ?>
     <?php endif; ?>
-    
-    <li class="sidebar-divider"></li>
-    
-    <?php foreach ($commonItems as $item): ?>
-        <li class="sidebar-item">
-            <a href="<?php echo $item['link']; ?>" class="sidebar-link">
-                <i class="sidebar-icon <?php echo $item['icon']; ?>"></i>
-                <span class="sidebar-text"><?php echo $item['label']; ?></span>
-            </a>
-        </li>
-    <?php endforeach; ?>
-    
-    <li class="sidebar-item">
-        <a href="<?php echo BASE_URL; ?>modules/auth/logout.php" class="sidebar-link text-danger">
-            <i class="sidebar-icon bi-box-arrow-right"></i>
-            <span class="sidebar-text">Logout</span>
-        </a>
-    </li>
 </ul>
