@@ -5,6 +5,17 @@ requireAuth();
 checkRole(['Receptionist']);
 
 $user = getCurrentUser();
+
+// Get real patient count
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM patients WHERE status = 'active'");
+    $stmt->execute();
+    $result = $stmt->fetch();
+    $totalPatients = $result['total'];
+} catch (PDOException $e) {
+    $totalPatients = '--';
+    error_log("Patient count error: " . $e->getMessage());
+}
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
 
@@ -32,7 +43,7 @@ $user = getCurrentUser();
                 <i class="bi bi-people"></i>
             </div>
             <div class="stat-content">
-                <h3>--</h3>
+                <h3><?php echo $totalPatients; ?></h3>
                 <p>Total Patients</p>
             </div>
         </div>
