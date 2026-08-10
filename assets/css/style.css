@@ -74,7 +74,7 @@ body {
 .navbar {
     height: var(--header-height);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    z-index: 10000;
 }
 
 .navbar-brand {

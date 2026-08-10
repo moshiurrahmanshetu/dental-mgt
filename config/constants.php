@@ -2,11 +2,11 @@
 // Application Constants
 define('BASE_URL', 'http://localhost:8000/');
 define('SITE_NAME', 'Dental Management System');
-define('SITE_EMAIL', 'admin@dentalcare.com');
+define('SITE_EMAIL', 'mithun@gmail.com');
 
 // Database Constants
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'dental_management_db');
+define('DB_NAME', 'dental_mgt_test');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
@@ -28,4 +28,3 @@ define('RECORDS_PER_PAGE', 10);
 
 // Timezone
 date_default_timezone_set('UTC');
-?>

@@ -1,4 +1,12 @@
 <?php
+// Rule 7: Check if installed before loading app files
+$lockFile = __DIR__ . '/config/installed.lock';
+if (!file_exists($lockFile)) {
+    // Redirect to installer - use simple absolute redirect
+    header('Location: http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) . '/installer/');
+    exit();
+}
+
 require_once __DIR__ . '/config/constants.php';
 require_once __DIR__ . '/config/db.php';
 
